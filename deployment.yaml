@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tasky-deployment
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: tasky
+  template:
+    metadata:
+      labels:
+        app: tasky
+      annotations:
+        kubectl.kubernetes.io/default-container: tasky
+    spec:
+      containers:
+      - name: tasky
+        image: 940482447333.dkr.ecr.us-east-1.amazonaws.com/wiz-take-home/tasky:latest
+        ports:
+        - containerPort: 8080
+        env:
+        - name: MONGODB_URI
+          valueFrom:
+            secretKeyRef:
+              name: mongo-secret
+              key: MONGO_URI
+        - name: JWT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: jwt-secret
+              key: JWT_SECRET
+# ---
+# apiVersion: v1
+# kind: Service
+# metadata:
+#   name: tasky-service
+#   labels:
+#     app: tasky
+# spec:
+#   type: LoadBalancer
+#   selector:
+#     app: tasky
+#   ports:
+#     - protocol: TCP
+#       port: 80
+#       targetPort: 80
